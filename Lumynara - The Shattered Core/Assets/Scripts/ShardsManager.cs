@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
 
-public class PlayerScoreManager : MonoBehaviour
+public class ShardsManager : MonoBehaviour
 {
     [SerializeField] private Rigidbody rb;
     private int count;
