@@ -844,8 +844,8 @@ PlayerSettings:
   editorAssembliesCompatibilityLevel: 1
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: Lumynara- The Shattered Core
-  metroPackageVersion: 
+  metroPackageName: Lumynara-TheShatteredCore
+  metroPackageVersion: 1.0.0.0
   metroCertificatePath: 
   metroCertificatePassword: 
   metroCertificateSubject: 
@@ -853,7 +853,7 @@ PlayerSettings:
   metroCertificateNotAfter: 0000000000000000
   metroApplicationDescription: Lumynara- The Shattered Core
   wsaImages: {}
-  metroTileShortName: 
+  metroTileShortName: Lumynara- The Shattered Core
   metroTileShowName: 0
   metroMediumTileShowName: 0
   metroLargeTileShowName: 0

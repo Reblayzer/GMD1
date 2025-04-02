@@ -4,7 +4,7 @@ using TMPro;
 
 public class MoveJumpAbility : MonoBehaviour
 {
-    [SerializeField] private Rigidbody rb;
+    [SerializeField] private Rigidbody _rb;
     private float movementX;
     private float movementY;
     private float speed = 0.15f;
@@ -13,16 +13,16 @@ public class MoveJumpAbility : MonoBehaviour
 
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
+        _rb = GetComponent<Rigidbody>();
     }
 
     void Update()
     {
-        if (!OptionsMenu.isPaused)
+        if (!InGameOptionsMenu.isPaused)
         {
             if (Input.GetKeyDown(KeyCode.Space) && groundContactCount > 0)
             {
-                rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
+                _rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
                 groundContactCount = 0; // Reset to avoid double jumps
             }
         }
@@ -47,7 +47,7 @@ public class MoveJumpAbility : MonoBehaviour
         // Convert input direction to world direction
         Vector3 movement = cameraRight * movementX + cameraForward * movementY;
 
-        rb.AddForce(movement * speed, ForceMode.Impulse);
+        _rb.AddForce(movement * speed, ForceMode.Impulse);
     }
 
     void OnMove(InputValue movementValue)
