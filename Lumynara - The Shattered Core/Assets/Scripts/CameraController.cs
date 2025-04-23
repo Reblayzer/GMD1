@@ -4,21 +4,22 @@ using System.Collections.Generic;
 
 public class CameraController : MonoBehaviour
 {
-    [SerializeField] private GameObject player;
-    private Vector3 offset;
+    [SerializeField] private Transform player;
+    [SerializeField] private Vector3 offset = new Vector3(-10, 10, -10); // Isometric 45° offset
+    [SerializeField] private Vector3 rotationEuler = new Vector3(30f, 45f, 0f); // Top-down diagonal look
 
-    void Start()
+    private void Start()
     {
         if (player != null)
         {
-            offset = transform.position - player.transform.position;
+            transform.rotation = Quaternion.Euler(rotationEuler);
         }
     }
 
-    void LateUpdate()
+    private void LateUpdate()
     {
         if (player == null) return;
 
-        transform.position = player.transform.position + offset;
+        transform.position = player.position + offset;
     }
 }
