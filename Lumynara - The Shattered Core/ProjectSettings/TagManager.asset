@@ -7,6 +7,7 @@ TagManager:
   - Shard
   - Ground
   - PickUp
+  - Portal
   layers:
   - Default
   - TransparentFX

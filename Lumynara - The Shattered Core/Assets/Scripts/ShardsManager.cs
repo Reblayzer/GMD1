@@ -1,53 +1,43 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class ShardsManager : MonoBehaviour
 {
-    [SerializeField] private Rigidbody rb;
     private int count;
     [SerializeField] private TextMeshProUGUI countText;
-    [SerializeField] private GameObject winTextObject;
-    
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private int totalShards;
+
     void Start()
     {
-        rb = GetComponent <Rigidbody>();
         count = 0;
+        totalShards = GameObject.FindGameObjectsWithTag("Shard").Length;
         SetCountText();
-        winTextObject.SetActive(false);
     }
-    
-    void OnTriggerEnter(Collider other) 
+
+    private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("PickUp")) 
+        if (other.CompareTag("Shard"))
         {
             other.gameObject.SetActive(false);
-            count = count + 1;
+            count += 1;
             SetCountText();
         }
-    }
-
-    void SetCountText() 
-    {
-        countText.text =  $"Count: {count.ToString()}/7";
-        if (count >= 7)
+        else if (other.CompareTag("Portal"))
         {
-            Destroy(GameObject.FindGameObjectWithTag("Enemy"));
-            winTextObject.SetActive(true);
+            if (ShardPersistentManager.Instance != null)
+            {
+                string currentScene = SceneManager.GetActiveScene().name;
+                ShardPersistentManager.Instance.TryUpdateBest(currentScene, count);
+            }
+
+            SceneManager.LoadScene("LevelsMenu");
         }
     }
 
-    void OnCollisionEnter(Collision collision)
+    void SetCountText()
     {
-        if (collision.gameObject.CompareTag("Enemy"))
-        {
-            // Destroy the current object
-            Destroy(gameObject); 
-            // Update the winText to display "You Lose!"
-            winTextObject.gameObject.SetActive(true);
-            winTextObject.GetComponent<TextMeshProUGUI>().text = "You Lose!";
-        }
+        countText.text = $"{count.ToString()}/{totalShards}";
     }
-
 }
