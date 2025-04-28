@@ -28,33 +28,44 @@ public class AudioSettingsManager : MonoBehaviour
 
     public void ToggleMute(bool isMuted)
     {
+        Color32 gray = new Color32(142, 142, 142, 255);
+        Color32 aqua = new Color32(30, 182, 123, 255);
+        Color32 darkAqua = new Color32(11, 100, 65, 255);
+
+        HandleSelectable handleSelectable = handleImage.GetComponent<HandleSelectable>();
+
         if (isMuted)
         {
             audioMixer.SetFloat("MusicVolume", -80f);
             volumeSlider.interactable = false;
 
-            SetAlpha(fillImage, 0.4f);
-            SetAlpha(handleImage, 0.4f);
-            SetAlpha(checkmarkImage, 1f);
+            SetColor(fillImage, darkAqua);
+
+            if (handleSelectable != null)
+            {
+                handleSelectable.interactable = false;
+            }
         }
         else
         {
             audioMixer.SetFloat("MusicVolume", Mathf.Log10(volumeSlider.value) * 20);
             volumeSlider.interactable = true;
 
-            SetAlpha(fillImage, 1f);
-            SetAlpha(handleImage, 1f);
-            SetAlpha(checkmarkImage, 0.4f);
+            SetColor(fillImage, aqua);
+
+            if (handleSelectable != null)
+            {
+                handleSelectable.interactable = true;
+            }
         }
     }
 
-    private void SetAlpha(Image img, float alpha)
+
+    private void SetColor(Image image, Color32 color)
     {
-        if (img != null)
+        if (image != null)
         {
-            Color color = img.color;
-            color.a = alpha;
-            img.color = color;
+            image.color = color;
         }
     }
 }
