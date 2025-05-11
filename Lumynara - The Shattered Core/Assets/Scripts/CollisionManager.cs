@@ -3,17 +3,17 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using TMPro;
 
-public class ShardsManager : MonoBehaviour
+public class CollisionManager : MonoBehaviour
 {
-    private int count;
     [SerializeField] private TextMeshProUGUI countText;
+    [SerializeField] private GameUIManager uiManager;
+    private int count = 0;
     private int totalShards;
 
     void Start()
     {
-        count = 0;
         totalShards = GameObject.FindGameObjectsWithTag("Shard").Length;
-        SetCountText();
+        UpdateCountUI();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -21,23 +21,22 @@ public class ShardsManager : MonoBehaviour
         if (other.CompareTag("Shard"))
         {
             other.gameObject.SetActive(false);
-            count += 1;
-            SetCountText();
+            count++;
+            UpdateCountUI();
         }
         else if (other.CompareTag("Portal"))
         {
             if (ShardPersistentManager.Instance != null)
             {
-                string currentScene = SceneManager.GetActiveScene().name;
-                ShardPersistentManager.Instance.TryUpdateBest(currentScene, count);
+                string sceneName = SceneManager.GetActiveScene().name;
+                ShardPersistentManager.Instance.TryUpdateBest(sceneName, count);
             }
-
-            SceneManager.LoadScene("LevelsMenu");
+            uiManager.ShowLevelComplete();
         }
     }
 
-    void SetCountText()
+    private void UpdateCountUI()
     {
-        countText.text = $"{count.ToString()}/{totalShards}";
+        countText.text = $"{count}/{totalShards}";
     }
 }

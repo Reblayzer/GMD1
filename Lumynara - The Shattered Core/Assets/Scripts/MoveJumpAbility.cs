@@ -7,7 +7,10 @@ public class MoveJumpAbility : MonoBehaviour
     [SerializeField] private Rigidbody _rb;
     private float movementX;
     private float movementY;
-    private float speed = 0.15f;
+    [SerializeField] private float speed = 5f;
+    [SerializeField] private float deceleration = 5f;
+    [SerializeField] private float deadZone = 0.01f;
+    [SerializeField] private float airControl = 0.3f;
     private float jumpForce = 7f;
     private int groundContactCount = 0; // Track number of ground contacts
 
@@ -28,26 +31,49 @@ public class MoveJumpAbility : MonoBehaviour
         }
     }
 
-    void FixedUpdate() 
+    void FixedUpdate()
     {
-        if (Camera.main == null) return; // Ensure the camera exists
+        if (Camera.main == null) return;
 
-        // Get the camera's forward and right directions
-        Vector3 cameraForward = Camera.main.transform.forward;
-        Vector3 cameraRight = Camera.main.transform.right;
+        Vector3 forward = Camera.main.transform.forward;
+        Vector3 right = Camera.main.transform.right;
+        forward.y = right.y = 0;
+        forward.Normalize();
+        right.Normalize();
 
-        // Ignore the Y component to keep movement horizontal
-        cameraForward.y = 0;
-        cameraRight.y = 0;
+        Vector3 movement = right * movementX + forward * movementY;
 
-        // Normalize the vectors to prevent diagonal movement from being faster
-        cameraForward.Normalize();
-        cameraRight.Normalize();
+        if (groundContactCount > 0)
+        {
+            if (movement.sqrMagnitude > deadZone)
+            {
+                Vector3 dir = movement.normalized;
+                Vector3 targetVel = dir * speed;
+                _rb.linearVelocity = new Vector3(targetVel.x, _rb.linearVelocity.y, targetVel.z);
+            }
+            else
+            {
+                Vector3 currentH = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z);
+                Vector3 decelH = Vector3.Lerp(currentH, Vector3.zero, deceleration * Time.fixedDeltaTime);
+                _rb.linearVelocity = new Vector3(decelH.x, _rb.linearVelocity.y, decelH.z);
+            }
+        }
+        else
+        {
+            if (movement.sqrMagnitude > deadZone)
+            {
+                Vector3 dir = movement.normalized;
+                Vector3 currentH = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z);
+                Vector3 targetH = dir * speed;
 
-        // Convert input direction to world direction
-        Vector3 movement = cameraRight * movementX + cameraForward * movementY;
-
-        _rb.AddForce(movement * speed, ForceMode.Impulse);
+                Vector3 newH = Vector3.MoveTowards(
+                    currentH,
+                    targetH,
+                    speed * airControl * Time.fixedDeltaTime
+                );
+                _rb.linearVelocity = new Vector3(newH.x, _rb.linearVelocity.y, newH.z);
+            }
+        }
     }
 
     void OnMove(InputValue movementValue)
