@@ -11,13 +11,18 @@ public class ProjectileController : MonoBehaviour
 
     void Update()
     {
-        transform.Rotate (new Vector3 (15, 30, 45) * Time.deltaTime);
+        transform.Rotate(new Vector3(15, 30, 45) * Time.deltaTime);
     }
 
-    void OnCollisionEnter(Collision collistion)
+    void OnCollisionEnter(Collision collision)
     {
-        Destroy(collistion.gameObject);
+        // If we hit the player, destroy Orbo
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            Destroy(collision.gameObject);
+        }
+
+        // In all cases, destroy the bullet
         Destroy(gameObject);
     }
- 
 }

@@ -3,11 +3,13 @@ using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
-    public void GoBack() {
-        SceneManager.LoadSceneAsync("MainMenu");
+    public void GoBack()
+    {
+        SceneManager.LoadSceneAsync("Main Menu");
     }
 
-    public void playLevel(string levelNumber) {
+    public void playLevel(string levelNumber)
+    {
         SceneManager.LoadSceneAsync(levelNumber);
     }
 }

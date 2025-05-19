@@ -16,7 +16,9 @@ GameObject:
   - component: {fileID: -5591022492216501987}
   - component: {fileID: -1238662404316585745}
   - component: {fileID: 5471840477822506686}
-  m_Layer: 0
+  - component: {fileID: 3632714927937750323}
+  - component: {fileID: 1884740332450705842}
+  m_Layer: 7
   m_Name: Orbo
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -126,6 +128,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rb: {fileID: 0}
   speed: 5
+  deceleration: 5
+  deadZone: 0.01
+  airControl: 0.3
 --- !u!54 &-5591022492216501987
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -192,7 +197,37 @@ MonoBehaviour:
   m_GameObject: {fileID: 304621508371018028}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13bc59d5ac0cf0440ab0a68b8fa90628, type: 3}
+  m_Script: {fileID: 11500000, guid: 035bbcf0bd8c3f94ea58c1837aed6473, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   countText: {fileID: 0}
+  uiManager: {fileID: 0}
+  portalChild: {fileID: 0}
+--- !u!114 &3632714927937750323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 304621508371018028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c7a03182dacb6d4c81e707f2a736474, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uiManager: {fileID: 0}
+  projectileTag: Projectile
+--- !u!114 &1884740332450705842
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 304621508371018028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39b766ff1b201a84f9eec0a0eadf00e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uiManager: {fileID: 0}
+  fallThresholdY: -10

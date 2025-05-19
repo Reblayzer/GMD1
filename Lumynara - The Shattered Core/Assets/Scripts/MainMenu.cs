@@ -6,7 +6,7 @@ public class MainMenu : MonoBehaviour
 {
     public void PlayGame()
     {
-        SceneManager.LoadSceneAsync("LevelsMenu");
+        SceneManager.LoadSceneAsync("Levels Menu");
     }
 
     public void QuitGame()
@@ -16,6 +16,6 @@ public class MainMenu : MonoBehaviour
 
     public void OpenOptions()
     {
-        SceneManager.LoadSceneAsync("OptionsMenu");
+        SceneManager.LoadSceneAsync("Options Menu");
     }
 }

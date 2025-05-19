@@ -8,6 +8,8 @@ TagManager:
   - Ground
   - PickUp
   - Portal
+  - Projectile
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -16,9 +18,9 @@ TagManager:
   - Water
   - UI
   - ShardUI
-  - 
-  - 
-  - 
+  - Player
+  - EnemyVision
+  - Platform
   - 
   - 
   - 

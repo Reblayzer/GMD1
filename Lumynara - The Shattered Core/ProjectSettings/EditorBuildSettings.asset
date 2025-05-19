@@ -6,46 +6,46 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/MainMenu.unity
+    path: Assets/Scenes/Main Menu.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
-    path: Assets/Scenes/LevelsMenu.unity
+    path: Assets/Scenes/Levels Menu.unity
     guid: 34723dc371a51214d9f79365e99f0835
   - enabled: 1
-    path: Assets/Scenes/OptionsMenu.unity
+    path: Assets/Scenes/Options Menu.unity
     guid: ad274b9a51d1da547850587233a117a2
   - enabled: 1
-    path: Assets/Scenes/L1.unity
+    path: Assets/Scenes/Level 1.unity
     guid: 4d1ec3757358bc04f859ba7a5ef83a57
   - enabled: 1
-    path: Assets/Scenes/L2.unity
+    path: Assets/Scenes/Level 2.unity
     guid: e588fbd4c1547014e95382082ddb5644
   - enabled: 1
-    path: Assets/Scenes/L3.unity
+    path: Assets/Scenes/Level 3.unity
     guid: 50d79558b0b30a94ea8a34765081a47d
   - enabled: 1
-    path: Assets/Scenes/L4.unity
+    path: Assets/Scenes/Level 4.unity
     guid: 6bffa7818d34beb49b66945dba04164b
   - enabled: 1
-    path: Assets/Scenes/L5.unity
+    path: Assets/Scenes/Level 5.unity
     guid: 79ee053ba68022e4d8d16b45aa179c6b
   - enabled: 1
-    path: Assets/Scenes/L6.unity
+    path: Assets/Scenes/Level 6.unity
     guid: b8b5ef0a63edaea4f87e1f97a0a5179d
   - enabled: 1
-    path: Assets/Scenes/L7.unity
+    path: Assets/Scenes/Level 7.unity
     guid: b2175af9a7e1b1f44bb9032f45817309
   - enabled: 1
-    path: Assets/Scenes/L8.unity
+    path: Assets/Scenes/Level 8.unity
     guid: b8b95a2d075efa741802dd1adc9f0783
   - enabled: 1
-    path: Assets/Scenes/L9.unity
+    path: Assets/Scenes/Level 9.unity
     guid: 083aeb6a866f6554d808e9393ab185fd
   - enabled: 1
-    path: Assets/Scenes/L10.unity
+    path: Assets/Scenes/Level 10.unity
     guid: 400b72f08fa14f94e8b0d7f2d3cbec2a
   - enabled: 1
-    path: Assets/Scenes/L11.unity
+    path: Assets/Scenes/Level FInal.unity
     guid: 0a617fb925fabf44a85a9b998abe0bb7
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

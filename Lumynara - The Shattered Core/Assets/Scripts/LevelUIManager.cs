@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
 
-public class GameUIManager : MonoBehaviour
+public class LevelUIManager : MonoBehaviour
 {
   [System.Serializable]
   public struct MenuConfig
@@ -14,7 +14,7 @@ public class GameUIManager : MonoBehaviour
     public string restartText;
   }
 
-  public enum UIState { None, Paused, Completed }
+  public enum UIState { None, Paused, Completed, Shot, Fallen }
 
   [Header("Panels & Texts")]
   [SerializeField] private GameObject background;
@@ -32,6 +32,8 @@ public class GameUIManager : MonoBehaviour
   [Header("Configs")]
   [SerializeField] private MenuConfig pauseConfig;
   [SerializeField] private MenuConfig completeConfig;
+  [SerializeField] private MenuConfig shotConfig;
+  [SerializeField] private MenuConfig fellConfig;
 
   [Header("Input")]
   [SerializeField] private InputActionReference pauseActionRef;
@@ -43,6 +45,7 @@ public class GameUIManager : MonoBehaviour
     background.SetActive(false);
     menuPanel.SetActive(false);
     Time.timeScale = 1f;
+    AudioListener.pause = false;
   }
 
   private void OnEnable()
@@ -52,6 +55,7 @@ public class GameUIManager : MonoBehaviour
     {
       if (state == UIState.None) ShowPause();
       else if (state == UIState.Paused) Resume();
+      // if Completed or Shot, we ignore LT
     };
   }
 
@@ -78,11 +82,13 @@ public class GameUIManager : MonoBehaviour
     AudioListener.pause = true;
   }
 
-  public void ShowPause()
-      => ShowMenu(pauseConfig, UIState.Paused);
+  public void ShowPause() => ShowMenu(pauseConfig, UIState.Paused);
 
-  public void ShowLevelComplete()
-      => ShowMenu(completeConfig, UIState.Completed);
+  public void ShowLevelComplete() => ShowMenu(completeConfig, UIState.Completed);
+
+  public void ShowHit() => ShowMenu(shotConfig, UIState.Shot);
+
+  public void ShowFell() => ShowMenu(fellConfig, UIState.Fallen);
 
   public void Resume()
   {
@@ -95,11 +101,12 @@ public class GameUIManager : MonoBehaviour
 
   public void OnPrimaryButtonClicked()
   {
-    SceneManager.LoadSceneAsync("LevelsMenu");
+    SceneManager.LoadSceneAsync("Levels Menu");
   }
 
   public void OnRestartButtonClicked()
   {
-    SceneManager.LoadSceneAsync("L1");
+    // reload the current level in all cases
+    SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().name);
   }
 }

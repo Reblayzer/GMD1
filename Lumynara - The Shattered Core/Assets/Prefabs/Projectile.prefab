@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 3617928761736846604}
   - component: {fileID: 4720748932309579852}
   - component: {fileID: 6356395576343125415}
-  - component: {fileID: 3489415432358341769}
   - component: {fileID: 2538341840139384888}
   m_Layer: 0
   m_Name: Projectile-Fragment
@@ -88,27 +87,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &3489415432358341769
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 200242589880024727}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &2538341840139384888
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -147,7 +125,6 @@ GameObject:
   - component: {fileID: 1816518225266855186}
   - component: {fileID: 7675152589816490066}
   - component: {fileID: 8301984181332233657}
-  - component: {fileID: 1975956951197006999}
   - component: {fileID: 593040071863003174}
   m_Layer: 0
   m_Name: Projectile-Fragment
@@ -224,27 +201,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &1975956951197006999
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3010516896635186825}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &593040071863003174
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -283,7 +239,6 @@ GameObject:
   - component: {fileID: 1910098435390712962}
   - component: {fileID: 7580692070514133442}
   - component: {fileID: 8106773428046638121}
-  - component: {fileID: 1791196506317675783}
   - component: {fileID: 832461239044311478}
   m_Layer: 0
   m_Name: Projectile-Fragment
@@ -360,27 +315,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &1791196506317675783
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3057971572367396633}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &832461239044311478
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -419,7 +353,6 @@ GameObject:
   - component: {fileID: 2167246958262548424}
   - component: {fileID: 7900884459001172616}
   - component: {fileID: 8363352403365164899}
-  - component: {fileID: 2038451072985105997}
   - component: {fileID: 1089005648180564732}
   m_Layer: 0
   m_Name: Projectile-Fragment
@@ -496,27 +429,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &2038451072985105997
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3378134274053330003}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &1089005648180564732
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -555,7 +467,6 @@ GameObject:
   - component: {fileID: 39773010908704007}
   - component: {fileID: 8303303427648112711}
   - component: {fileID: 7678160471511920044}
-  - component: {fileID: 204032545486937218}
   - component: {fileID: 1261634795652696115}
   m_Layer: 0
   m_Name: Projectile-Fragment
@@ -632,27 +543,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &204032545486937218
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3494614979058978460}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &1261634795652696115
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -691,7 +581,6 @@ GameObject:
   - component: {fileID: 756382932498126580}
   - component: {fileID: 8775608481645048756}
   - component: {fileID: 6952490568631817823}
-  - component: {fileID: 587338866612660081}
   - component: {fileID: 1977151959018419136}
   m_Layer: 0
   m_Name: Projectile-Fragment
@@ -768,27 +657,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &587338866612660081
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4219071153776735599}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &1977151959018419136
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -827,7 +695,6 @@ GameObject:
   - component: {fileID: 7414007450616560868}
   - component: {fileID: 1537371590473996708}
   - component: {fileID: 927982788096621647}
-  - component: {fileID: 7258196958389144929}
   - component: {fileID: 8641474203677350352}
   m_Layer: 0
   m_Name: Projectile-Fragment
@@ -904,27 +771,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &7258196958389144929
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6201959058867806079}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &8641474203677350352
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -963,9 +809,10 @@ GameObject:
   - component: {fileID: 4581205601424067513}
   - component: {fileID: 6411234410479611901}
   - component: {fileID: 3800621052410776456}
+  - component: {fileID: 8613979747925613855}
   m_Layer: 0
   m_Name: Projectile
-  m_TagString: Untagged
+  m_TagString: Projectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1026,9 +873,30 @@ Rigidbody:
     serializedVersion: 2
     m_Bits: 0
   m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_ImplicitTensor: 0
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
+--- !u!135 &8613979747925613855
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6673223691086762201}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.2
+  m_Center: {x: 0, y: 0, z: 0}
