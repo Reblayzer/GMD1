@@ -1,4 +1,4 @@
-# Blog 5 Development Update 3
+# Blog 5 Development Updates 3
 
 During these other weeks, I have worked more on the level UI. I have added a dynamic PauseMenu that changes its content based on 3 different scenarios:
 If the user presses the escape button/left trigger
