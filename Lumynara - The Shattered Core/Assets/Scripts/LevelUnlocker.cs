@@ -1,32 +1,57 @@
 using UnityEngine;
-using System.Collections.Generic;
+using UnityEngine.UI;
+using TMPro;
 
 public class LevelUnlocker : MonoBehaviour
 {
-  [Header("Drag your Level 1→5 buttons here (in order)")]
-  [SerializeField] private List<GameObject> levelButtons;
+  [Header("Containers under Canvas")]
+  [SerializeField] private Transform levelsContainer;
+  [SerializeField] private Transform scoreContainer;
 
-  [Header("Drag your Final level button here")]
-  [SerializeField] private GameObject finalLevelButton;
+  [Header("Final level button")]
+  [SerializeField] private Button finalLevelButton;
+
+  private Button[] levelButtons;
+  private TMP_Text[] levelScoreTexts;
+
+  private const int ShardsPerLevel = 10;
+
+  private void Awake()
+  {
+    // populate arrays automatically
+    levelButtons = levelsContainer.GetComponentsInChildren<Button>(true);
+    levelScoreTexts = scoreContainer.GetComponentsInChildren<TMP_Text>(true);
+
+    if (levelButtons.Length != levelScoreTexts.Length)
+      Debug.LogError($"LevelUnlocker: {levelButtons.Length} buttons vs. {levelScoreTexts.Length} score texts", this);
+  }
 
   private void Start()
   {
-    // 1) Safely grab total shards (0 if no manager present)
-    int totalShards = ShardPersistentManager.Instance != null
-        ? ShardPersistentManager.Instance.GetTotalShardsCollected()
-        : 0;
+    var mgr = ShardPersistentManager.Instance;
+    int total = mgr.GetTotalShardsCollected();
 
-    // 2) Compute how many of the first five to unlock:
-    //    0–9 → 1, 10–19 → 2, … 40–49 → 5
-    int toShow = totalShards / 10 + 1;
-    toShow = Mathf.Clamp(toShow, 1, levelButtons.Count);
+    // how many to unlock (1–5)
+    int toShow = Mathf.Clamp(total / ShardsPerLevel + 1, 1, levelButtons.Length);
 
-    // 3) Activate the first N, deactivate the rest
-    for (int i = 0; i < levelButtons.Count; i++)
-      levelButtons[i].SetActive(i < toShow);
+    for (int i = 0; i < levelButtons.Length; i++)
+    {
+      string levelName = $"Level {i + 1}";
+      bool unlocked = i < toShow;
+      bool completed = mgr.IsLevelCompleted(levelName);
 
-    // 4) Show “Final” only at 50+ shards
+      levelButtons[i].gameObject.SetActive(unlocked);
+      levelScoreTexts[i].gameObject.SetActive(completed);
+
+      if (completed)
+      {
+        // show that level’s best final‐score
+        levelScoreTexts[i].text = mgr.GetBestScoreForLevel(levelName).ToString();
+      }
+    }
+
+    // show Final button once you’ve racked up ≥50 shards
     if (finalLevelButton != null)
-      finalLevelButton.SetActive(totalShards >= 50);
+      finalLevelButton.gameObject.SetActive(total >= levelButtons.Length * ShardsPerLevel);
   }
 }

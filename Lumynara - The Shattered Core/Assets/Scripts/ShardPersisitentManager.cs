@@ -3,10 +3,13 @@ using System.Collections.Generic;
 
 public class ShardPersistentManager : MonoBehaviour
 {
-    public static ShardPersistentManager Instance;
+    public static ShardPersistentManager Instance { get; private set; }
 
-    // Save the best shards collected per level
-    private Dictionary<string, int> bestShardsPerLevel = new Dictionary<string, int>();
+    // which levels have ever been beaten
+    private HashSet<string> completedLevels = new HashSet<string>();
+
+    // best final‐score per level
+    private Dictionary<string, int> bestScorePerLevel = new Dictionary<string, int>();
 
     private void Awake()
     {
@@ -15,34 +18,30 @@ public class ShardPersistentManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
-        else
-        {
-            Destroy(gameObject);
-        }
+        else Destroy(gameObject);
     }
 
-    public void TryUpdateBest(string levelName, int shardsCollected)
+    // Call once at end‐of‐level; marks level completed and records your finalScore.
+    public void MarkLevelCompleted(string levelName, int finalScore)
     {
-        if (!bestShardsPerLevel.ContainsKey(levelName))
+        completedLevels.Add(levelName);
+
+        if (!bestScorePerLevel.ContainsKey(levelName) ||
+            finalScore > bestScorePerLevel[levelName])
         {
-            bestShardsPerLevel[levelName] = shardsCollected;
-        }
-        else
-        {
-            if (shardsCollected > bestShardsPerLevel[levelName])
-            {
-                bestShardsPerLevel[levelName] = shardsCollected;
-            }
+            bestScorePerLevel[levelName] = finalScore;
         }
     }
 
+    //True if levelName has ever been beaten.</summary>
+    public bool IsLevelCompleted(string levelName)
+        => completedLevels.Contains(levelName);
+
+    //Returns that level’s best final‐score, or 0 if never beaten.</summary>
+    public int GetBestScoreForLevel(string levelName)
+        => bestScorePerLevel.TryGetValue(levelName, out var s) ? s : 0;
+
+    //Total shards = 10 × number of completed levels.</summary>
     public int GetTotalShardsCollected()
-    {
-        int total = 0;
-        foreach (var kvp in bestShardsPerLevel)
-        {
-            total += kvp.Value;
-        }
-        return total;
-    }
+        => completedLevels.Count * 10;
 }

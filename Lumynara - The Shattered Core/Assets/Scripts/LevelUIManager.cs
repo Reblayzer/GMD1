@@ -1,112 +1,193 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 using TMPro;
 
 public class LevelUIManager : MonoBehaviour
 {
-  [System.Serializable]
-  public struct MenuConfig
-  {
-    public string label;
-    public string primaryText;
-    public string restartText;
-  }
+  public static LevelUIManager Instance { get; private set; }
 
   public enum UIState { None, Paused, Completed, Shot, Fallen }
 
   [Header("Panels & Texts")]
   [SerializeField] private GameObject background;
   [SerializeField] private GameObject menuPanel;
-
   [SerializeField] private TMP_Text labelText;
   [SerializeField] private TMP_Text scoreText;
   [SerializeField] private TMP_Text timeText;
-
   [SerializeField] private Button primaryButton;
   [SerializeField] private TMP_Text primaryButtonText;
   [SerializeField] private Button restartButton;
   [SerializeField] private TMP_Text restartButtonText;
 
   [Header("Configs")]
-  [SerializeField] private MenuConfig pauseConfig;
-  [SerializeField] private MenuConfig completeConfig;
-  [SerializeField] private MenuConfig shotConfig;
-  [SerializeField] private MenuConfig fellConfig;
+  [SerializeField] private LevelMenuConfig pauseConfig;
+  [SerializeField] private LevelMenuConfig completeConfig;
+  [SerializeField] private LevelMenuConfig shotConfig;
+  [SerializeField] private LevelMenuConfig fellConfig;
 
   [Header("Input")]
   [SerializeField] private InputActionReference pauseActionRef;
 
   private UIState state = UIState.None;
 
+  // running counters
+  private int shardsCollected;
+  private int currentScore;
+  private float levelTimer;
+
+  public int CurrentScore => currentScore;
+
   private void Awake()
   {
-    background.SetActive(false);
-    menuPanel.SetActive(false);
-    Time.timeScale = 1f;
-    AudioListener.pause = false;
+    if (Instance == null) Instance = this;
+    else { Destroy(gameObject); return; }
+
+    primaryButton.onClick.AddListener(OnPrimaryButtonClicked);
+    restartButton.onClick.AddListener(OnRestartButtonClicked);
+
+    // start hidden & reset everything
+    Resume();
+    ResetCounters();
+
+    Cursor.lockState = CursorLockMode.Locked;
   }
 
   private void OnEnable()
   {
     pauseActionRef.action.Enable();
-    pauseActionRef.action.performed += _ =>
-    {
-      if (state == UIState.None) ShowPause();
-      else if (state == UIState.Paused) Resume();
-      // if Completed or Shot, we ignore LT
-    };
+    pauseActionRef.action.performed += OnPausePerformed;
   }
 
   private void OnDisable()
   {
-    pauseActionRef.action.performed -= _ => { };
+    pauseActionRef.action.performed -= OnPausePerformed;
     pauseActionRef.action.Disable();
   }
 
-  private void ApplyConfig(in MenuConfig cfg)
+  private void Update()
+  {
+    if (state == UIState.None)
+    {
+      levelTimer += Time.deltaTime;
+      UpdateTimerUI();
+    }
+  }
+
+  public void AddShard()
+  {
+    shardsCollected++;
+  }
+
+  private void ComputeFinalScore()
+  {
+    // e.g. 1000 pts per shard minus 10 pts per second
+    currentScore = Mathf.Max(0, shardsCollected * 1000 - Mathf.FloorToInt(levelTimer) * 10);
+    UpdateScoreUI();
+  }
+
+  public void ResetCounters()
+  {
+    shardsCollected = 0;
+    currentScore = 0;
+    levelTimer = 0f;
+    UpdateScoreUI();
+    UpdateTimerUI();
+  }
+
+  private void UpdateScoreUI()
+  {
+    if (scoreText != null)
+      scoreText.text = $"Score: {currentScore}";
+  }
+
+  private void UpdateTimerUI()
+  {
+    if (timeText == null) return;
+    int mins = (int)(levelTimer / 60f);
+    int secs = (int)(levelTimer % 60f);
+    timeText.text = $"Time: {mins:00}:{secs:00}";
+  }
+
+  private void ApplyConfig(in LevelMenuConfig cfg)
   {
     labelText.text = cfg.label;
     primaryButtonText.text = cfg.primaryText;
     restartButtonText.text = cfg.restartText;
   }
 
-  private void ShowMenu(in MenuConfig cfg, UIState newState)
+  private void ShowMenu(in LevelMenuConfig cfg, UIState newState)
   {
     state = newState;
+
+    if (newState == UIState.Completed)
+    {
+      ComputeFinalScore();
+
+      // persist this level + its final score
+      ShardPersistentManager.Instance
+          .MarkLevelCompleted(SceneManager.GetActiveScene().name, currentScore);
+    }
+
     ApplyConfig(cfg);
-    background.SetActive(true);
-    menuPanel.SetActive(true);
+
+    // only show the score text on Completed
+    if (scoreText != null)
+      scoreText.gameObject.SetActive(newState == UIState.Completed);
+
+    background?.SetActive(true);
+    menuPanel?.SetActive(true);
+
     Time.timeScale = 0f;
     AudioListener.pause = true;
+    Cursor.lockState = CursorLockMode.None;
   }
-
-  public void ShowPause() => ShowMenu(pauseConfig, UIState.Paused);
-
-  public void ShowLevelComplete() => ShowMenu(completeConfig, UIState.Completed);
-
-  public void ShowHit() => ShowMenu(shotConfig, UIState.Shot);
-
-  public void ShowFell() => ShowMenu(fellConfig, UIState.Fallen);
 
   public void Resume()
   {
     state = UIState.None;
-    background.SetActive(false);
-    menuPanel.SetActive(false);
+
+    background?.SetActive(false);
+    menuPanel?.SetActive(false);
+
+    // hide score during gameplay & other menus
+    if (scoreText != null)
+      scoreText.gameObject.SetActive(false);
+
     Time.timeScale = 1f;
     AudioListener.pause = false;
+    Cursor.lockState = CursorLockMode.Locked;
   }
 
-  public void OnPrimaryButtonClicked()
+  public void ShowPause() => ShowMenu(pauseConfig, UIState.Paused);
+  public void ShowLevelComplete() => ShowMenu(completeConfig, UIState.Completed);
+  public void ShowHit() => ShowMenu(shotConfig, UIState.Shot);
+  public void ShowFell() => ShowMenu(fellConfig, UIState.Fallen);
+
+  private void OnPrimaryButtonClicked()
   {
+    Resume();
     SceneManager.LoadSceneAsync("Levels Menu");
   }
 
-  public void OnRestartButtonClicked()
+  private void OnRestartButtonClicked()
   {
-    // reload the current level in all cases
+    Resume();
     SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().name);
   }
+
+  private void OnPausePerformed(InputAction.CallbackContext ctx)
+  {
+    if (state == UIState.None) ShowPause();
+    else Resume();
+  }
+}
+
+[System.Serializable]
+public struct LevelMenuConfig
+{
+  public string label;
+  public string primaryText;
+  public string restartText;
 }

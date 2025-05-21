@@ -1,101 +1,96 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using TMPro;
 
 public class MoveJumpAbility : MonoBehaviour
 {
+    [Header("Movement Settings")]
     [SerializeField] private Rigidbody _rb;
-    private float movementX;
-    private float movementY;
     [SerializeField] private float speed = 5f;
     [SerializeField] private float deceleration = 5f;
     [SerializeField] private float deadZone = 0.01f;
     [SerializeField] private float airControl = 0.3f;
-    private float jumpForce = 7f;
-    private int groundContactCount = 0; // Track number of ground contacts
+    [SerializeField] private float jumpForce = 7f;
 
-    void Start()
+    private float movementX, movementY;
+    private int groundContactCount;
+
+    private void Awake()
     {
-        _rb = GetComponent<Rigidbody>();
+        // If you forgot to assign your Rigidbody in the inspector
+        if (_rb == null) _rb = GetComponent<Rigidbody>();
     }
 
-    void Update()
+    // ← wire this to the PlayerInput “Move (Vector2)” UnityEvent
+    public void OnMove(InputAction.CallbackContext ctx)
     {
-        if (!InGameOptionsMenu.isPaused)
-        {
-            if (Input.GetKeyDown(KeyCode.Space) && groundContactCount > 0)
-            {
-                _rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
-                groundContactCount = 0; // Reset to avoid double jumps
-            }
-        }
+        Vector2 v = ctx.ReadValue<Vector2>();
+        movementX = v.x;
+        movementY = v.y;
     }
 
-    void FixedUpdate()
+    // ← wire this to the PlayerInput “Jump (Button)” UnityEvent
+    public void OnJump(InputAction.CallbackContext ctx)
     {
-        if (Camera.main == null) return;
+        // only fire on a performed phase (not started or canceled)
+        if (ctx.phase != InputActionPhase.Performed) return;
 
-        Vector3 forward = Camera.main.transform.forward;
-        Vector3 right = Camera.main.transform.right;
-        forward.y = right.y = 0;
-        forward.Normalize();
-        right.Normalize();
-
-        Vector3 movement = right * movementX + forward * movementY;
+        // ignore if paused
+        if (Time.timeScale == 0f) return;
 
         if (groundContactCount > 0)
         {
+            _rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
+            groundContactCount = 0;
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (Camera.main == null) return;
+
+        // flatten camera axes
+        Vector3 forward = Camera.main.transform.forward;
+        Vector3 right = Camera.main.transform.right;
+        forward.y = right.y = 0f;
+        forward.Normalize();
+        right.Normalize();
+
+        var movement = right * movementX + forward * movementY;
+
+        if (groundContactCount > 0)
+        {
+            // grounded
             if (movement.sqrMagnitude > deadZone)
             {
-                Vector3 dir = movement.normalized;
-                Vector3 targetVel = dir * speed;
-                _rb.linearVelocity = new Vector3(targetVel.x, _rb.linearVelocity.y, targetVel.z);
+                var target = movement.normalized * speed;
+                _rb.linearVelocity = new Vector3(target.x, _rb.linearVelocity.y, target.z);
             }
             else
             {
-                Vector3 currentH = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z);
-                Vector3 decelH = Vector3.Lerp(currentH, Vector3.zero, deceleration * Time.fixedDeltaTime);
-                _rb.linearVelocity = new Vector3(decelH.x, _rb.linearVelocity.y, decelH.z);
+                var horiz = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z);
+                var decel = Vector3.Lerp(horiz, Vector3.zero, deceleration * Time.fixedDeltaTime);
+                _rb.linearVelocity = new Vector3(decel.x, _rb.linearVelocity.y, decel.z);
             }
         }
-        else
+        else if (movement.sqrMagnitude > deadZone)
         {
-            if (movement.sqrMagnitude > deadZone)
-            {
-                Vector3 dir = movement.normalized;
-                Vector3 currentH = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z);
-                Vector3 targetH = dir * speed;
-
-                Vector3 newH = Vector3.MoveTowards(
-                    currentH,
-                    targetH,
-                    speed * airControl * Time.fixedDeltaTime
-                );
-                _rb.linearVelocity = new Vector3(newH.x, _rb.linearVelocity.y, newH.z);
-            }
+            // in air
+            var horiz = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z);
+            var targetH = movement.normalized * speed;
+            var newH = Vector3.MoveTowards(horiz, targetH, speed * airControl * Time.fixedDeltaTime);
+            _rb.linearVelocity = new Vector3(newH.x, _rb.linearVelocity.y, newH.z);
         }
     }
 
-    void OnMove(InputValue movementValue)
-    {
-        Vector2 movementVector = movementValue.Get<Vector2>();
-        movementX = movementVector.x;
-        movementY = movementVector.y;
-    }
-
-    void OnCollisionEnter(Collision collision)
+    private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
-        {
-            groundContactCount++; // Increase count for each ground contact
-        }
+            groundContactCount++;
     }
 
-    void OnCollisionExit(Collision collision)
+    private void OnCollisionExit(Collision collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
-        {
-            groundContactCount = Mathf.Max(0, groundContactCount - 1); // Prevent negative values
-        }
+            groundContactCount = Mathf.Max(0, groundContactCount - 1);
     }
 }

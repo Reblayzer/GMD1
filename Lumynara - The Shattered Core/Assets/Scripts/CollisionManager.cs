@@ -1,22 +1,30 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using TMPro;
 
 public class CollisionManager : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI countText;
+    [Header("UI")]
+    [Tooltip("Drop in your LevelUIManager (the one in the level scene)")]
     [SerializeField] private LevelUIManager uiManager;
-    private int count = 0;
-    private int totalShards;
+
+    [Header("Shard Counter Display (in-level)")]
+    [SerializeField] private TextMeshProUGUI countText;
+
+    [Header("Portal")]
+    [Tooltip("The child that you activate once all shards are collected")]
     [SerializeField] private GameObject portalChild;
 
-    void Start()
-    {
-        // Count shards at startup
-        totalShards = GameObject.FindGameObjectsWithTag("Shard").Length;
+    private int shardsCollectedInScene = 0;
+    private int totalShardsInScene;
 
-        // Hide the portal visual until all shards are collected
+    private void Start()
+    {
+        // find how many shards exist when you started
+        totalShardsInScene = GameObject.FindGameObjectsWithTag("Shard").Length;
+
+        // hide portal until the last shard
         if (portalChild != null)
             portalChild.SetActive(false);
 
@@ -27,38 +35,38 @@ public class CollisionManager : MonoBehaviour
     {
         if (other.CompareTag("Shard"))
         {
-            // Collect shard
+            // 1) Hide the shard
             other.gameObject.SetActive(false);
-            count++;
+
+            // 2) Tell LevelUIManager we got one
+            if (LevelUIManager.Instance != null)
+                LevelUIManager.Instance.AddShard();
+
+            // keep your own count for the little corner display
+            shardsCollectedInScene++;
             UpdateCountUI();
 
-            // If that was the last one, show the portal child
-            if (count == totalShards && portalChild != null)
+            // 3) If that was the last, show portal
+            if (shardsCollectedInScene >= totalShardsInScene && portalChild != null)
                 portalChild.SetActive(true);
         }
         else if (other.CompareTag("Portal"))
         {
-            // Only allow level complete once portalChild is active (i.e. all shards collected)
+            // only let them finish once it’s active
             if (portalChild != null && portalChild.activeInHierarchy)
             {
-                // Save best shard count
-                var mgr = ShardPersistentManager.Instance;
-                if (mgr != null)
-                    mgr.TryUpdateBest(SceneManager.GetActiveScene().name, count);
-
-                // Show the “level complete” UI
                 uiManager.ShowLevelComplete();
             }
             else
             {
-                // Optional: feedback that the portal isn't ready yet
-                Debug.Log("Portal locked: collect all shards first!");
+                Debug.Log("Portal locked—collect all shards first!");
             }
         }
     }
 
     private void UpdateCountUI()
     {
-        countText.text = $"{count}/{totalShards}";
+        if (countText != null)
+            countText.text = $"{shardsCollectedInScene}/{totalShardsInScene}";
     }
 }
