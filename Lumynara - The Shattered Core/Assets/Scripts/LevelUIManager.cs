@@ -26,6 +26,8 @@ public class LevelUIManager : MonoBehaviour
   [SerializeField] private LevelMenuConfig completeConfig;
   [SerializeField] private LevelMenuConfig shotConfig;
   [SerializeField] private LevelMenuConfig fellConfig;
+  [SerializeField] private LevelMenuConfig gameCompleteConfig;
+
 
   [Header("Input")]
   [SerializeField] private InputActionReference pauseActionRef;
@@ -33,6 +35,7 @@ public class LevelUIManager : MonoBehaviour
   private UIState state = UIState.None;
 
   // running counters
+  [HideInInspector] public int TotalShards = 40;
   private int shardsCollected;
   private int currentScore;
   private float levelTimer;
@@ -78,6 +81,11 @@ public class LevelUIManager : MonoBehaviour
   public void AddShard()
   {
     shardsCollected++;
+  }
+
+  public void RemoveShard()
+  {
+    shardsCollected = Mathf.Max(0, shardsCollected - 1);
   }
 
   private void ComputeFinalScore()
@@ -182,6 +190,43 @@ public class LevelUIManager : MonoBehaviour
     if (state == UIState.None) ShowPause();
     else Resume();
   }
+
+  public void GetShardCounts(out int collected, out int total)
+  {
+    string sceneName = SceneManager.GetActiveScene().name;
+
+    if (sceneName == "Level Final")
+    {
+      // In final level, Orbo starts with all shards
+      collected = TotalShards;
+      total = TotalShards;
+    }
+    else
+    {
+      // In other levels, we start with 0 collected
+      collected = 0;
+      total = GameObject.FindGameObjectsWithTag("Shard").Length;
+    }
+  }
+
+  public void ShowGameCompleted()
+  {
+    state = UIState.Completed;
+
+    ApplyConfig(gameCompleteConfig);
+
+    if (scoreText != null) scoreText.gameObject.SetActive(false);
+    if (timeText != null) timeText.gameObject.SetActive(false);
+    if (restartButton != null) restartButton.gameObject.SetActive(false);
+
+    background?.SetActive(true);
+    menuPanel?.SetActive(true);
+
+    Time.timeScale = 0f;
+    AudioListener.pause = true;
+    Cursor.lockState = CursorLockMode.None;
+  }
+
 }
 
 [System.Serializable]

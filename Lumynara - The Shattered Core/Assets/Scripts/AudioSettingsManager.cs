@@ -2,70 +2,53 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(AudioMixer))]
 public class AudioSettingsManager : MonoBehaviour
 {
-    public AudioMixer audioMixer;
-    public Slider volumeSlider;
-    public Toggle muteToggle;
+    const string kVolumeKey = "MusicVolume";      // stores the slider value 0–1
+    const string kMutedKey = "MusicMuted";       // stores 0 or 1
 
-    public Image fillImage;
-    public Image handleImage;
-    public Image checkmarkImage;
+    [Header("Wiring")]
+    public AudioMixer audioMixer;  // assign your MusicMixer here
+    public Slider volumeSlider; // your SliderLockable
+    public Toggle muteToggle;   // your ToggleSelectable
 
-    private void Start()
+    void Start()
     {
-        volumeSlider.onValueChanged.AddListener(SetVolume);
-        muteToggle.onValueChanged.AddListener(ToggleMute);
+        // 1) register for callbacks
+        volumeSlider.onValueChanged.AddListener(OnVolumeChanged);
+        muteToggle.onValueChanged.AddListener(OnMuteChanged);
+
+        // 2) load & apply saved settings
+        float savedVol = PlayerPrefs.GetFloat(kVolumeKey, 1f);
+        bool savedMuted = PlayerPrefs.GetInt(kMutedKey, 0) == 1;
+
+        // order is important: set mute first so slider callback doesn't fight it
+        muteToggle.isOn = savedMuted;
+        volumeSlider.value = savedVol;
     }
 
-    public void SetVolume(float volume)
+    private void OnVolumeChanged(float v)
     {
+        // only actually change mixer if not muted:
         if (!muteToggle.isOn)
-        {
-            audioMixer.SetFloat("MusicVolume", Mathf.Log10(volume) * 20);
-        }
+            audioMixer.SetFloat("MusicVolume", Mathf.Log10(Mathf.Clamp01(v)) * 20f);
+
+        // persist
+        PlayerPrefs.SetFloat(kVolumeKey, v);
+        PlayerPrefs.Save();
     }
 
-    public void ToggleMute(bool isMuted)
+    private void OnMuteChanged(bool isMuted)
     {
-        Color32 gray = new Color32(142, 142, 142, 255);
-        Color32 aqua = new Color32(30, 182, 123, 255);
-        Color32 darkAqua = new Color32(11, 100, 65, 255);
-
-        HandleSelectable handleSelectable = handleImage.GetComponent<HandleSelectable>();
-
         if (isMuted)
-        {
             audioMixer.SetFloat("MusicVolume", -80f);
-            volumeSlider.interactable = false;
-
-            SetColor(fillImage, darkAqua);
-
-            if (handleSelectable != null)
-            {
-                handleSelectable.interactable = false;
-            }
-        }
         else
-        {
-            audioMixer.SetFloat("MusicVolume", Mathf.Log10(volumeSlider.value) * 20);
-            volumeSlider.interactable = true;
+            // un‐mute back to whatever slider says
+            audioMixer.SetFloat("MusicVolume", Mathf.Log10(Mathf.Clamp01(volumeSlider.value)) * 20f);
 
-            SetColor(fillImage, aqua);
-
-            if (handleSelectable != null)
-            {
-                handleSelectable.interactable = true;
-            }
-        }
-    }
-
-
-    private void SetColor(Image image, Color32 color)
-    {
-        if (image != null)
-        {
-            image.color = color;
-        }
+        // persist
+        PlayerPrefs.SetInt(kMutedKey, isMuted ? 1 : 0);
+        PlayerPrefs.Save();
     }
 }

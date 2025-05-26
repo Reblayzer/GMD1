@@ -2,38 +2,89 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class HandleSelectable : Selectable, IPointerDownHandler, IPointerUpHandler
+public class HandleSelectable : Selectable,
+                                ISelectHandler,
+                                IDeselectHandler,
+                                IMoveHandler
 {
-    public override void OnPointerDown(PointerEventData eventData)
-    {
-        if (!IsInteractable()) return;
+    private Slider _slider;
+    private bool _locked;
 
-        base.OnPointerDown(eventData);
-        DoStateTransition(SelectionState.Pressed, false);
+    protected override void Awake()
+    {
+        base.Awake();
+        _slider = GetComponentInParent<Slider>();
     }
 
-    public override void OnPointerUp(PointerEventData eventData)
+    public override void OnSelect(BaseEventData eventData)
     {
-        if (!IsInteractable()) return;
+        if (!IsInteractable() || _locked) return;
+        DoStateTransition(SelectionState.Highlighted, false);
+    }
 
-        base.OnPointerUp(eventData);
+    public override void OnDeselect(BaseEventData eventData)
+    {
+        if (!IsInteractable() || _locked) return;
         DoStateTransition(SelectionState.Normal, false);
-
-        if (EventSystem.current != null && EventSystem.current.currentSelectedGameObject == gameObject)
-        {
-            EventSystem.current.SetSelectedGameObject(null);
-        }
     }
 
-    public void RefreshState()
+    public override void OnMove(AxisEventData eventData)
     {
-        if (!IsInteractable())
+        if (_slider == null || _locked)
         {
-            DoStateTransition(SelectionState.Disabled, true);
+            // if locked, swallow only L/R
+            if (_locked &&
+                (eventData.moveDir == MoveDirection.Left ||
+                 eventData.moveDir == MoveDirection.Right))
+            {
+                eventData.Use();
+                return;
+            }
+
+            base.OnMove(eventData);
+            return;
+        }
+
+        // normal slider left/right:
+        float step = _slider.wholeNumbers
+                     ? 1f
+                     : _slider.maxValue / 20f;
+
+        if (eventData.moveDir == MoveDirection.Left)
+        {
+            _slider.value = Mathf.Max(_slider.minValue,
+                                      _slider.value - step);
+            eventData.Use();
+        }
+        else if (eventData.moveDir == MoveDirection.Right)
+        {
+            _slider.value = Mathf.Min(_slider.maxValue,
+                                      _slider.value + step);
+            eventData.Use();
         }
         else
         {
-            DoStateTransition(SelectionState.Normal, true);
+            base.OnMove(eventData);
         }
+    }
+
+    public void SetLocked(bool locked)
+    {
+        _locked = locked;
+        RefreshState();
+    }
+
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+        RefreshState();
+    }
+
+    private void RefreshState()
+    {
+        if (!IsInteractable() || _locked)
+            DoStateTransition(SelectionState.Disabled, true);
+        else
+            DoStateTransition(SelectionState.Normal, true);
     }
 }

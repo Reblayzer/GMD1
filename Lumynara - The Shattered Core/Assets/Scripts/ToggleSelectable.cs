@@ -2,95 +2,48 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class ToggleSelectable : Toggle, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
+[RequireComponent(typeof(Toggle))]
+public class ToggleSelectable : Toggle,
+                                ISelectHandler,
+                                IDeselectHandler
 {
-    private bool isHovered = false;
-
     protected override void Awake()
     {
         base.Awake();
-        onValueChanged.AddListener(OnToggleChanged);
+        // Re-apply correct tint every time the value changes
+        onValueChanged.AddListener(_ => UpdateVisualState(false));
     }
 
-    protected override void OnDestroy()
+    protected override void OnEnable()
     {
-        base.OnDestroy();
-        onValueChanged.RemoveListener(OnToggleChanged);
+        base.OnEnable();
+        // Ensure correct tint at startup
+        UpdateVisualState(true);
     }
 
-    private void OnToggleChanged(bool isOn)
+    public override void OnSelect(BaseEventData eventData)
     {
-        UpdateVisualState();
-    }
-
-    public override void OnPointerDown(PointerEventData eventData)
-    {
-        base.OnPointerDown(eventData);
-        DoStateTransition(SelectionState.Pressed, false);
-    }
-
-    public override void OnPointerUp(PointerEventData eventData)
-    {
-        base.OnPointerUp(eventData);
-        isHovered = false;
-        UpdateVisualState();
-    }
-
-    public override void OnPointerEnter(PointerEventData eventData)
-    {
-        base.OnPointerEnter(eventData);
-        isHovered = true;
+        base.OnSelect(eventData);
+        // Show Highlighted when focused
         DoStateTransition(SelectionState.Highlighted, false);
     }
 
-    public override void OnPointerExit(PointerEventData eventData)
+    public override void OnDeselect(BaseEventData eventData)
     {
-        base.OnPointerExit(eventData);
-        isHovered = false;
-        UpdateVisualState();
+        base.OnDeselect(eventData);
+        // Revert back to Normal/Selected
+        UpdateVisualState(false);
     }
 
-    protected override void DoStateTransition(SelectionState state, bool instant)
-    {
-        if (state == SelectionState.Normal || state == SelectionState.Selected)
-        {
-            if (isOn)
-            {
-                base.DoStateTransition(SelectionState.Normal, instant);
-            }
-            else
-            {
-                base.DoStateTransition(SelectionState.Pressed, instant);
-            }
-        }
-        else
-        {
-            base.DoStateTransition(state, instant);
-        }
-    }
-
-    private void UpdateVisualState()
+    // Applies Normal / Selected / Disabled tints
+    // depending on isOn & interactable.
+    private void UpdateVisualState(bool instant)
     {
         if (!IsInteractable())
-        {
-            base.DoStateTransition(SelectionState.Disabled, false);
-            return;
-        }
-
-        if (isHovered)
-        {
-            base.DoStateTransition(SelectionState.Highlighted, false);
-        }
+            DoStateTransition(SelectionState.Disabled, instant);
+        else if (isOn)
+            DoStateTransition(SelectionState.Selected, instant);
         else
-        {
-            if (isOn)
-            {
-                base.DoStateTransition(SelectionState.Normal, false);
-            }
-            else
-            {
-                base.DoStateTransition(SelectionState.Pressed, false);
-            }
-        }
+            DoStateTransition(SelectionState.Normal, instant);
     }
 }

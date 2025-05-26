@@ -3084,11 +3084,11 @@ MonoBehaviour:
   restartButton: {fileID: 1311041262}
   restartButtonText: {fileID: 1311041261}
   pauseConfig:
-    label: Level 1
+    label: Level 2
     primaryText: Levels Menu
     restartText: Try Again
   completeConfig:
-    label: Level 1 Complete!
+    label: Level 2 Complete!
     primaryText: Continue
     restartText: Try Again
   shotConfig:
@@ -3099,7 +3099,12 @@ MonoBehaviour:
     label: You Fell!
     primaryText: Levels Menu
     restartText: Try Again
+  gameCompleteConfig:
+    label: 
+    primaryText: 
+    restartText: 
   pauseActionRef: {fileID: 3337859585825274134, guid: 9c31f3b582166f3438ab4b2a35903c74, type: 3}
+  TotalShards: 40
 --- !u!4 &1329623571
 Transform:
   m_ObjectHideFlags: 0
@@ -4231,9 +4236,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 035bbcf0bd8c3f94ea58c1837aed6473, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  countText: {fileID: 504938101}
   uiManager: {fileID: 1329623570}
+  countText: {fileID: 504938101}
   portalChild: {fileID: 1517011951}
+  shardCounterObject: {fileID: 0}
+  visualShardPrefab: {fileID: 0}
+  orbo: {fileID: 0}
+  core: {fileID: 0}
+  arcHeight: 2
 --- !u!114 &1605572075 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5454339985975642921, guid: 709346dccab6fb24f908cca77620972e, type: 3}

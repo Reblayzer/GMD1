@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 
 public class CollisionManager : MonoBehaviour
 {
@@ -15,16 +16,29 @@ public class CollisionManager : MonoBehaviour
     [Header("Portal")]
     [Tooltip("The child that you activate once all shards are collected")]
     [SerializeField] private GameObject portalChild;
+    [SerializeField] private GameObject shardCounterObject;
+    [SerializeField] private GameObject visualShardPrefab;
+    [SerializeField] private Transform orbo;
+    [SerializeField] private Transform core;
+    [SerializeField] private float arcHeight = 2f;
+
 
     private int shardsCollectedInScene = 0;
     private int totalShardsInScene;
 
     private void Start()
     {
-        // find how many shards exist when you started
-        totalShardsInScene = GameObject.FindGameObjectsWithTag("Shard").Length;
+        if (LevelUIManager.Instance != null)
+        {
+            LevelUIManager.Instance.GetShardCounts(out shardsCollectedInScene, out totalShardsInScene);
+        }
+        else
+        {
+            // Fallback: count objects with the tag
+            totalShardsInScene = GameObject.FindGameObjectsWithTag("Shard").Length;
+            shardsCollectedInScene = 0;
+        }
 
-        // hide portal until the last shard
         if (portalChild != null)
             portalChild.SetActive(false);
 
@@ -42,17 +56,16 @@ public class CollisionManager : MonoBehaviour
             if (LevelUIManager.Instance != null)
                 LevelUIManager.Instance.AddShard();
 
-            // keep your own count for the little corner display
+            // 3) Local count
             shardsCollectedInScene++;
             UpdateCountUI();
 
-            // 3) If that was the last, show portal
+            // 4) Show portal if all collected
             if (shardsCollectedInScene >= totalShardsInScene && portalChild != null)
                 portalChild.SetActive(true);
         }
         else if (other.CompareTag("Portal"))
         {
-            // only let them finish once it’s active
             if (portalChild != null && portalChild.activeInHierarchy)
             {
                 uiManager.ShowLevelComplete();
@@ -69,4 +82,55 @@ public class CollisionManager : MonoBehaviour
         if (countText != null)
             countText.text = $"{shardsCollectedInScene}/{totalShardsInScene}";
     }
+
+    public IEnumerator TransferShardsToCore(float delayBetweenTransfers = 0.05f)
+    {
+        while (shardsCollectedInScene > 0)
+        {
+            shardsCollectedInScene--;
+            totalShardsInScene--;
+
+            if (LevelUIManager.Instance != null)
+                LevelUIManager.Instance.RemoveShard();
+
+            UpdateCountUI();
+
+            // Spawn and animate visual shard
+            if (visualShardPrefab != null && orbo != null && core != null)
+            {
+                Vector3 randomOffset = Random.insideUnitSphere * 0.1f;
+                Vector3 spawnPosition = orbo.position + randomOffset;
+                GameObject shard = Instantiate(visualShardPrefab, spawnPosition, Quaternion.identity);
+                StartCoroutine(MoveShardInArc(shard.transform, orbo.position, core.position, arcHeight, 0.5f));
+            }
+
+            yield return new WaitForSeconds(delayBetweenTransfers);
+        }
+
+        if (shardCounterObject != null)
+            shardCounterObject.SetActive(false);
+    }
+
+    private IEnumerator MoveShardInArc(Transform shard, Vector3 start, Vector3 end, float height, float duration)
+    {
+        float timeElapsed = 0f;
+
+        while (timeElapsed < duration)
+        {
+            float t = timeElapsed / duration;
+
+            // Parabolic arc calculation
+            Vector3 currentPos = Vector3.Lerp(start, end, t);
+            currentPos.y += height * 4f * (t - t * t); // parabolic height: h * 4t(1-t)
+
+            shard.position = currentPos;
+
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        shard.position = end;
+        Destroy(shard.gameObject);
+    }
+
 }
