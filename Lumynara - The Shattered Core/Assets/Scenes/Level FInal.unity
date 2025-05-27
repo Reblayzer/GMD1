@@ -2249,7 +2249,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Thank you Orbo, I am very greatfull.
+  m_text: 'Thank you Orbo, I am very grateful.
 
     You restored peace in Lumynara!'
   m_isRightToLeft: 0
