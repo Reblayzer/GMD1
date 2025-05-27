@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(AudioSource))]
 public class MoveJumpAbility : MonoBehaviour
 {
     [Header("Movement Settings")]
@@ -11,13 +13,19 @@ public class MoveJumpAbility : MonoBehaviour
     [SerializeField] private float airControl = 0.3f;
     [SerializeField] private float jumpForce = 7f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip jumpSound;
+    private AudioSource _audioSource;
+
     private float movementX, movementY;
     private int groundContactCount;
 
     private void Awake()
     {
-        // If you forgot to assign your Rigidbody in the inspector
         if (_rb == null) _rb = GetComponent<Rigidbody>();
+        _audioSource = GetComponent<AudioSource>();
+        // Ensure AudioSource is configured: 3D sound, no play on awake, etc.
+        _audioSource.playOnAwake = false;
     }
 
     // ← wire this to the PlayerInput “Move (Vector2)” UnityEvent
@@ -31,16 +39,17 @@ public class MoveJumpAbility : MonoBehaviour
     // ← wire this to the PlayerInput “Jump (Button)” UnityEvent
     public void OnJump(InputAction.CallbackContext ctx)
     {
-        // only fire on a performed phase (not started or canceled)
-        if (ctx.phase != InputActionPhase.Performed) return;
-
-        // ignore if paused
-        if (Time.timeScale == 0f) return;
+        if (ctx.phase != InputActionPhase.Performed || groundContactCount == 0)
+            return;
 
         if (groundContactCount > 0)
         {
             _rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
             groundContactCount = 0;
+
+            // Play jump SFX
+            if (jumpSound != null)
+                _audioSource.PlayOneShot(jumpSound);
         }
     }
 

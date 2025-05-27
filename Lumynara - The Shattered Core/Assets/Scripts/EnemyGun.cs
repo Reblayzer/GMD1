@@ -2,22 +2,34 @@ using UnityEngine;
 using System.Collections;
 
 [RequireComponent(typeof(Collider))]
+[RequireComponent(typeof(AudioSource))]
 public class EnemyGun : MonoBehaviour
 {
     [Header("Gun Settings")]
     public Transform projectileSpawnPoint;
     public GameObject projectilePrefab;
     public float projectileSpeed = 3f;
-    [Tooltip("Seconds between shots")]
     public float fireInterval = 1f;
 
+    [Header("Audio")]
+    public AudioClip shootSound;
+    private AudioSource _audioSource;
+
     [Header("Detection")]
-    [Tooltip("Tag on your Orbo player")]
     public string playerTag = "Player";
 
     // internal state
     private Transform target;
     private Coroutine firingRoutine;
+
+    private void Awake()
+    {
+        // Create or cache an AudioSource
+        _audioSource = GetComponent<AudioSource>();
+        if (_audioSource == null)
+            _audioSource = gameObject.AddComponent<AudioSource>();
+        _audioSource.playOnAwake = false;
+    }
 
     void OnTriggerEnter(Collider other)
     {
@@ -58,14 +70,14 @@ public class EnemyGun : MonoBehaviour
     {
         if (projectilePrefab == null || projectileSpawnPoint == null) return;
 
-        var projectile = Instantiate(
-            projectilePrefab,
-            projectileSpawnPoint.position,
-            projectileSpawnPoint.rotation
-        );
-        var rb = projectile.GetComponent<Rigidbody>();
-        if (rb != null)
+        // Spawn projectile
+        var proj = Instantiate(projectilePrefab, projectileSpawnPoint.position, projectileSpawnPoint.rotation);
+        if (proj.TryGetComponent<Rigidbody>(out var rb))
             rb.linearVelocity = projectileSpawnPoint.forward * projectileSpeed;
+
+        // Play shoot SFX
+        if (shootSound != null)
+            _audioSource.PlayOneShot(shootSound);
     }
 
     void Update()

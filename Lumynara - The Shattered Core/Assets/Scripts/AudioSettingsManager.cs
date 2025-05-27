@@ -30,11 +30,14 @@ public class AudioSettingsManager : MonoBehaviour
 
     private void OnVolumeChanged(float v)
     {
-        // only actually change mixer if not muted:
-        if (!muteToggle.isOn)
-            audioMixer.SetFloat("MusicVolume", Mathf.Log10(Mathf.Clamp01(v)) * 20f);
+        float db = Mathf.Log10(Mathf.Clamp01(v)) * 20f;
 
-        // persist
+        if (!muteToggle.isOn)
+        {
+            audioMixer.SetFloat("MusicVolume", db);
+            audioMixer.SetFloat("SFXVolume", db);
+        }
+
         PlayerPrefs.SetFloat(kVolumeKey, v);
         PlayerPrefs.Save();
     }
@@ -42,12 +45,17 @@ public class AudioSettingsManager : MonoBehaviour
     private void OnMuteChanged(bool isMuted)
     {
         if (isMuted)
+        {
             audioMixer.SetFloat("MusicVolume", -80f);
+            audioMixer.SetFloat("SFXVolume", -80f);
+        }
         else
-            // un‐mute back to whatever slider says
-            audioMixer.SetFloat("MusicVolume", Mathf.Log10(Mathf.Clamp01(volumeSlider.value)) * 20f);
+        {
+            float db = Mathf.Log10(Mathf.Clamp01(volumeSlider.value)) * 20f;
+            audioMixer.SetFloat("MusicVolume", db);
+            audioMixer.SetFloat("SFXVolume", db);
+        }
 
-        // persist
         PlayerPrefs.SetInt(kMutedKey, isMuted ? 1 : 0);
         PlayerPrefs.Save();
     }
